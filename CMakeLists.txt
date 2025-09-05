@@ -44,6 +44,8 @@ find_package(Qt5 REQUIRED COMPONENTS Core)
             mytcpclient.h mytcpclient.cpp
             protocalstruct.h
             readme.h
+            debughelper.h
+            ipaddressui.h ipaddressui.cpp ipaddressui.ui
             
             # mytcpclient.h mytcpclient.cpp
         )

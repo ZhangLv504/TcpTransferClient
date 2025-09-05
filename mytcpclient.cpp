@@ -1,9 +1,10 @@
 #include "mytcpclient.h"
 #include "protocalstruct.h"
-
 #include <QDebug>
 #include <QDateTime>
 #include <QtEndian>
+
+#define DebugTime qDebug() << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")
 
 // 构造函数，初始化 socket 为 nullptr，序列号置 0
 MyTcpClient::MyTcpClient(QObject *parent)
@@ -163,7 +164,7 @@ void MyTcpClient::sendRequest(const QJsonObject &data) {
 // 连接成功回调
 void MyTcpClient::onConnected() {
     // 1) 连接建立后，重置内部状态，避免上次连接的残留数据影响本次会话
-    qDebug() << "Connected"; 
+    qDebug() << "连接服务器成功!"; 
     m_buffer.clear(); 
     m_currentSeq = 0;
     
@@ -171,87 +172,47 @@ void MyTcpClient::onConnected() {
     emit connectionChanged(true); 
 }
 
-// // 可读数据回调
-// void MyTcpClient::onReadyRead() {
-//     if (!m_socket)
-//         return;
-    
-//     // 1) 把本次收到的所有字节追加到 m_buffer（累积缓冲），因为 TCP 是“面向字节流”的：
-//     //    - 可能一次 readAll() 读到多个完整包（粘包）
-//     //    - 也可能只读到半个包（半包）
-//     m_buffer.append(m_socket->readAll());
-    
-//     // 2) 循环尝试“剥离”出一个又一个完整包：必须先检查缓冲区是否有完整的协议头，
-//     //    再检查是否有足够的 body_len 长度的消息体。
-//     while (m_buffer.size() >= sizeof(ProtocolHeader)) {
-//         ProtocolHeader header;
-//         // 直接 memcpy 是最快的方式；也可改用 QDataStream 并设置大小端
-//         memcpy(&header, m_buffer.constData(), sizeof(ProtocolHeader));
-        
-//         // // 3) 校验协议头是否合规（魔数 / 版本）
-//         // // 将多字节字段转换回主机字节序
-//         // quint16 magic = qFromBigEndian<quint16>(header.magic);
-//         // quint32 bodyLen = qFromBigEndian<quint32>(header.body_len);
-//         // if (magic != 0x55AA || header.version != 1) {
-//         //     emit errorOccurred("Invalid protocol header");
-//         //     m_socket->disconnectFromHost();
-//         //     return;
-//         // }
-        
-//         // 3) 校验协议头是否合规（魔数 / 版本）
-//         if (!header.isValid()) {
-//             // 如果头不合法，继续读没有意义，直接断开避免死循环或安全问题
-//             emit errorOccurred("Invalid protocol header");
-//             m_socket->disconnectFromHost();
-//             return;
-//         }
-        
-//         // 4) 进一步的健壮性校验（可选但强烈建议）：
-//         //    比如限制 header.body_len 最大值，防止恶意包导致内存分配过大（DoS）
-//         //    例如：if (header.body_len > (10 * 1024 * 1024)) { ... }
-//         //    这里保持与你的原始逻辑一致，未做额外限制。
-        
-//         // 5) 如果当前缓冲区不够一个完整包（头 + 体），先退出等待更多字节
-//         if (m_buffer.size() < sizeof(ProtocolHeader) + header.body_len)
-//             break;
-        
-//         // 6) 从缓冲区切出一个完整消息体（不含头）
-//         QByteArray message = m_buffer.mid(sizeof(ProtocolHeader), header.body_len);
-        
-//         // 7) 移除已处理的“头+体”，缓冲区可能仍残留后续包的数据（继续 while 解析）
-//         m_buffer.remove(0, sizeof(ProtocolHeader) + header.body_len);
-        
-//         // 8) 把消息体交给 JSON 处理逻辑
-//         processResponse(message);
-//     }
-// }
+// 可读数据回调
 void MyTcpClient::onReadyRead() {
-    if (!m_socket) return;
+    if (!m_socket)
+        return;
+    
+    // 1) 把本次收到的所有字节追加到 m_buffer（累积缓冲），因为 TCP 是“面向字节流”的：
+    //    - 可能一次 readAll() 读到多个完整包（粘包）
+    //    - 也可能只读到半个包（半包）
     m_buffer.append(m_socket->readAll());
     
-    while (m_buffer.size() >= 10) { // 10 = 2+1+1+1+1+4
-        // 手动读取字段
-        quint16 magic = qFromBigEndian<quint16>(*reinterpret_cast<const quint16*>(m_buffer.constData()));
-        quint8 version = static_cast<quint8>(m_buffer[2]);
-        quint8 type = static_cast<quint8>(m_buffer[3]);
-        quint8 flags = static_cast<quint8>(m_buffer[4]);
-        quint8 reserved = static_cast<quint8>(m_buffer[5]);
-        quint32 body_len = qFromBigEndian<quint32>(*reinterpret_cast<const quint32*>(m_buffer.constData() + 6));
+    // 2) 循环尝试“剥离”出一个又一个完整包：必须先检查缓冲区是否有完整的协议头，
+    //    再检查是否有足够的 body_len 长度的消息体。
+    while (m_buffer.size() >= sizeof(ProtocolHeader)) {
+        ProtocolHeader header;
+        // 直接 memcpy 是最快的方式；也可改用 QDataStream 并设置大小端
+        memcpy(&header, m_buffer.constData(), sizeof(ProtocolHeader));
         
-        // 校验
-        if (magic != 0x55AA || version != 1) {
+        // 3) 校验协议头是否合规（魔数 / 版本）
+        if (!header.isValid()) {
+            // 如果头不合法，继续读没有意义，直接断开避免死循环或安全问题
             emit errorOccurred("Invalid protocol header");
             m_socket->disconnectFromHost();
             return;
         }
         
-        // 是否有完整消息体
-        if (m_buffer.size() < 10 + body_len)
+        // 4) 进一步的健壮性校验（可选但强烈建议）：
+        //    比如限制 header.body_len 最大值，防止恶意包导致内存分配过大（DoS）
+        //    例如：if (header.body_len > (10 * 1024 * 1024)) { ... }
+        //    这里保持与你的原始逻辑一致，未做额外限制。
+        
+        // 5) 如果当前缓冲区不够一个完整包（头 + 体），先退出等待更多字节
+        if (m_buffer.size() < sizeof(ProtocolHeader) + header.body_len)
             break;
         
-        QByteArray message = m_buffer.mid(10, body_len);
-        m_buffer.remove(0, 10 + body_len);
+        // 6) 从缓冲区切出一个完整消息体（不含头）
+        QByteArray message = m_buffer.mid(sizeof(ProtocolHeader), header.body_len);
         
+        // 7) 移除已处理的“头+体”，缓冲区可能仍残留后续包的数据（继续 while 解析）
+        m_buffer.remove(0, sizeof(ProtocolHeader) + header.body_len);
+        
+        // 8) 把消息体交给 JSON 处理逻辑
         processResponse(message);
     }
 }
@@ -309,63 +270,31 @@ void MyTcpClient::onError(QAbstractSocket::SocketError) {
     emit errorOccurred(err);
 }
 
-// // 构造完整协议包（头+JSON体）
-// QByteArray MyTcpClient::buildPacket(quint8 type, const QJsonObject &data) {
-//     // 1) JSON 序列化为紧凑格式字节数组（无多余空白，减少体积）
-//     QJsonDocument doc(data);
-//     QByteArray body = doc.toJson(QJsonDocument::Compact);
-    
-//     // 2) 填充协议头：type 由调用方指定；body_len 为 JSON 字节长度
-//     ProtocolHeader header;
-//     header.type = type;
-//     header.body_len = static_cast<quint32>(body.size());
-//     // // 其余字段（magic/version/flags/reserved）在构造函数中已给默认值
-//     // 所有多字节字段（magic、body_len）都要用大端。
-//     // 单字节字段（version、type、flags、reserved）不用转换。
-//     // 在服务端解析时，同样用 qFromBigEndian() 还原。
-//     // header.magic    = qToBigEndian<quint16>(0x55AA);
-//     // header.version  = 1;
-//     // header.type     = type;
-//     // header.flags    = 0;
-//     // header.reserved = 0;
-//     // header.body_len = qToBigEndian<quint32>(body.size());
-    
-//     // 3) 组合为“头 + 体”的连续字节流；对端以相同结构体解析即可
-//     QByteArray packet;
-//     packet.append(reinterpret_cast<const char*>(&header), sizeof(header));
-//     packet.append(body);
-    
-//     // 4) 返回完整数据包；调用方负责交给 socket 发送
-//     return packet;
-// }
-
+// 构造完整协议包（头+JSON体）
 QByteArray MyTcpClient::buildPacket(quint8 type, const QJsonObject &data) {
-    // 1. JSON 序列化
+    // 1) JSON 序列化为紧凑格式字节数组（无多余空白，减少体积）
     QJsonDocument doc(data);
     QByteArray body = doc.toJson(QJsonDocument::Compact);
     
-    // 2. 手动组装协议头到字节数组（避免结构体对齐问题）
-    QByteArray packet;
-    // magic (2字节, 大端)
-    quint16 magic = qToBigEndian<quint16>(0x55AA);
-    packet.append(reinterpret_cast<const char*>(&magic), sizeof(magic));
-    // version (1字节)
-    quint8 version = 1;
-    packet.append(reinterpret_cast<const char*>(&version), sizeof(version));
-    // type (1字节)
-    packet.append(reinterpret_cast<const char*>(&type), sizeof(type));
-    // flags (1字节)
-    quint8 flags = 0;
-    packet.append(reinterpret_cast<const char*>(&flags), sizeof(flags));
-    // reserved (1字节)
-    quint8 reserved = 0;
-    packet.append(reinterpret_cast<const char*>(&reserved), sizeof(reserved));
-    // body_len (4字节, 大端)
-    quint32 body_len = qToBigEndian<quint32>(body.size());
-    packet.append(reinterpret_cast<const char*>(&body_len), sizeof(body_len));
+    // 2) 填充协议头：type 由调用方指定；body_len 为 JSON 字节长度
+    ProtocolHeader header;
+    header.type = type;
+    header.body_len = static_cast<quint32>(body.size());
+    // // 其余字段（magic/version/flags/reserved）在构造函数中已给默认值
+    // 所有多字节字段（magic、body_len）都要用大端。
+    // 单字节字段（version、type、flags、reserved）不用转换。
     
-    // 3. 拼接消息体
+    // 3) 组合为“头 + 体”的连续字节流；对端以相同结构体解析即可
+    QByteArray packet;
+    packet.append(reinterpret_cast<const char*>(&header), sizeof(header));
     packet.append(body);
     
+    // 4) 返回完整数据包；调用方负责交给 socket 发送
     return packet;
 }
+
+
+
+
+
+

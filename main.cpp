@@ -1,10 +1,11 @@
-#include <QCoreApplication>
+#include <QApplication>
 #include "mytcpclient.h"
+#include "ipaddressui.h"
 #include <QFile>
 #include <QDebug>
 
 int main(int argc, char *argv[]) {
-    QCoreApplication a(argc, argv);
+    QApplication a(argc, argv);
     
     QString filePath = QCoreApplication::applicationDirPath() + "/test12345.md";
     qDebug() << filePath;
@@ -30,6 +31,9 @@ int main(int argc, char *argv[]) {
     });
     
     client.connectToServer("127.0.0.1", 12345);
+    
+    // IpAddressUI w;
+    // w.show();
     
     return a.exec();
 }

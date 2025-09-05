@@ -85,6 +85,15 @@ build CMakeFiles\TcpTransferClient.dir\mytcpclient.cpp.obj: CXX_COMPILER__TcpTra
   TARGET_COMPILE_PDB = CMakeFiles\TcpTransferClient.dir\
   TARGET_PDB = TcpTransferClient.pdb
 
+build CMakeFiles\TcpTransferClient.dir\ipaddressui.cpp.obj: CXX_COMPILER__TcpTransferClient_unscanned_Debug D$:\Study\QtWidget\BaseQtProj\NetworkStudy\TcpSocketServer\TcpTransferClient\ipaddressui.cpp || cmake_object_order_depends_target_TcpTransferClient
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB
+  FLAGS = -DQT_QML_DEBUG /DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd
+  INCLUDES = -ID:\Study\QtWidget\BaseQtProj\NetworkStudy\TcpSocketServer\TcpTransferClient\build\Desktop_Qt_5_15_2_MSVC2019_64bit-Debug\TcpTransferClient_autogen\include -external:IE:\Software\Qt\5.15.2\msvc2019_64\include -external:IE:\Software\Qt\5.15.2\msvc2019_64\include\QtCore -external:IE:\Software\Qt\5.15.2\msvc2019_64\.\mkspecs\win32-msvc -external:IE:\Software\Qt\5.15.2\msvc2019_64\include\QtWidgets -external:IE:\Software\Qt\5.15.2\msvc2019_64\include\QtGui -external:IE:\Software\Qt\5.15.2\msvc2019_64\include\QtANGLE -external:IE:\Software\Qt\5.15.2\msvc2019_64\include\QtNetwork -external:W0
+  OBJECT_DIR = CMakeFiles\TcpTransferClient.dir
+  OBJECT_FILE_DIR = CMakeFiles\TcpTransferClient.dir
+  TARGET_COMPILE_PDB = CMakeFiles\TcpTransferClient.dir\
+  TARGET_PDB = TcpTransferClient.pdb
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target TcpTransferClient
@@ -93,7 +102,7 @@ build CMakeFiles\TcpTransferClient.dir\mytcpclient.cpp.obj: CXX_COMPILER__TcpTra
 #############################################
 # Link the executable TcpTransferClient.exe
 
-build TcpTransferClient.exe: CXX_EXECUTABLE_LINKER__TcpTransferClient_Debug CMakeFiles\TcpTransferClient.dir\TcpTransferClient_autogen\mocs_compilation.cpp.obj CMakeFiles\TcpTransferClient.dir\main.cpp.obj CMakeFiles\TcpTransferClient.dir\widget.cpp.obj CMakeFiles\TcpTransferClient.dir\mytcpclient.cpp.obj | E$:\Software\Qt\5.15.2\msvc2019_64\lib\Qt5Widgetsd.lib E$:\Software\Qt\5.15.2\msvc2019_64\lib\Qt5Networkd.lib E$:\Software\Qt\5.15.2\msvc2019_64\lib\Qt5Guid.lib E$:\Software\Qt\5.15.2\msvc2019_64\lib\Qt5Cored.lib E$:\Software\Qt\5.15.2\msvc2019_64\lib\qtmaind.lib || TcpTransferClient_autogen TcpTransferClient_autogen_timestamp_deps
+build TcpTransferClient.exe: CXX_EXECUTABLE_LINKER__TcpTransferClient_Debug CMakeFiles\TcpTransferClient.dir\TcpTransferClient_autogen\mocs_compilation.cpp.obj CMakeFiles\TcpTransferClient.dir\main.cpp.obj CMakeFiles\TcpTransferClient.dir\widget.cpp.obj CMakeFiles\TcpTransferClient.dir\mytcpclient.cpp.obj CMakeFiles\TcpTransferClient.dir\ipaddressui.cpp.obj | E$:\Software\Qt\5.15.2\msvc2019_64\lib\Qt5Widgetsd.lib E$:\Software\Qt\5.15.2\msvc2019_64\lib\Qt5Networkd.lib E$:\Software\Qt\5.15.2\msvc2019_64\lib\Qt5Guid.lib E$:\Software\Qt\5.15.2\msvc2019_64\lib\Qt5Cored.lib E$:\Software\Qt\5.15.2\msvc2019_64\lib\qtmaind.lib || TcpTransferClient_autogen TcpTransferClient_autogen_timestamp_deps
   FLAGS = -DQT_QML_DEBUG /DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -MDd
   LINK_FLAGS = /machine:x64 /debug /INCREMENTAL /subsystem:windows
   LINK_LIBRARIES = E:\Software\Qt\5.15.2\msvc2019_64\lib\Qt5Widgetsd.lib  E:\Software\Qt\5.15.2\msvc2019_64\lib\Qt5Networkd.lib  E:\Software\Qt\5.15.2\msvc2019_64\lib\Qt5Guid.lib  E:\Software\Qt\5.15.2\msvc2019_64\lib\Qt5Cored.lib  E:\Software\Qt\5.15.2\msvc2019_64\lib\qtmaind.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
@@ -169,7 +178,7 @@ build TcpTransferClient_autogen_timestamp_deps: phony
 #############################################
 # Utility command for TcpTransferClient_autogen
 
-build TcpTransferClient_autogen: phony CMakeFiles\TcpTransferClient_autogen TcpTransferClient_autogen\include\ui_widget.h TcpTransferClient_autogen\timestamp TcpTransferClient_autogen\mocs_compilation.cpp TcpTransferClient_autogen_timestamp_deps
+build TcpTransferClient_autogen: phony CMakeFiles\TcpTransferClient_autogen TcpTransferClient_autogen\include\ui_widget.h TcpTransferClient_autogen\include\ui_ipaddressui.h TcpTransferClient_autogen\timestamp TcpTransferClient_autogen\mocs_compilation.cpp TcpTransferClient_autogen_timestamp_deps
 
 
 #############################################
@@ -186,7 +195,7 @@ build TcpTransferClient_autogen\timestamp TcpTransferClient_autogen\mocs_compila
 #############################################
 # Phony custom command for CMakeFiles\TcpTransferClient_autogen
 
-build CMakeFiles\TcpTransferClient_autogen TcpTransferClient_autogen\include\ui_widget.h | ${cmake_ninja_workdir}CMakeFiles\TcpTransferClient_autogen ${cmake_ninja_workdir}TcpTransferClient_autogen\include\ui_widget.h: phony TcpTransferClient_autogen\timestamp || TcpTransferClient_autogen_timestamp_deps
+build CMakeFiles\TcpTransferClient_autogen TcpTransferClient_autogen\include\ui_widget.h TcpTransferClient_autogen\include\ui_ipaddressui.h | ${cmake_ninja_workdir}CMakeFiles\TcpTransferClient_autogen ${cmake_ninja_workdir}TcpTransferClient_autogen\include\ui_widget.h ${cmake_ninja_workdir}TcpTransferClient_autogen\include\ui_ipaddressui.h: phony TcpTransferClient_autogen\timestamp || TcpTransferClient_autogen_timestamp_deps
 
 # =============================================================================
 # Target aliases.

@@ -37,4 +37,18 @@
     |                                            |
 #endif
 
+#if 0
+    SocketError error() const;
+
+Q_SIGNALS:
+#if QT_DEPRECATED_SINCE(5,15)
+    QT_DEPRECATED_NETWORK_API_5_15_X("Use QAbstractSocket::errorOccurred(QAbstractSocket::SocketError) instead")
+    void error(QAbstractSocket::SocketError);
+#endif
+    void errorOccurred(QAbstractSocket::SocketError);
+
+同时存在error函数和error信号，故需要在使用error信号时明确区分error(QAbstractSocket::SocketError)
+static_cast<>(void(QAbstractSocket::*)(QAbstractSocket::SocketError))(&QAbstractSocket::error)
+#endif
+
 #endif // README_H
