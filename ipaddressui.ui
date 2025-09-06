@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>278</width>
-    <height>42</height>
+    <width>217</width>
+    <height>37</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,11 +35,11 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QLineEdit" name="lineEdit">
+      <widget class="QLineEdit" name="txtIP1">
        <property name="minimumSize">
         <size>
-         <width>0</width>
-         <height>40</height>
+         <width>50</width>
+         <height>35</height>
         </size>
        </property>
        <property name="font">
@@ -56,11 +56,23 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="labDot1">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
-         <width>0</width>
-         <height>40</height>
+         <width>5</width>
+         <height>35</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>5</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -71,14 +83,17 @@
        <property name="text">
         <string>.</string>
        </property>
+       <property name="alignment">
+        <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+       </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_2">
+      <widget class="QLineEdit" name="txtIP2">
        <property name="minimumSize">
         <size>
-         <width>0</width>
-         <height>40</height>
+         <width>50</width>
+         <height>35</height>
         </size>
        </property>
        <property name="font">
@@ -95,11 +110,23 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="labDot2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
-         <width>0</width>
-         <height>40</height>
+         <width>5</width>
+         <height>35</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>5</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -110,14 +137,17 @@
        <property name="text">
         <string>.</string>
        </property>
+       <property name="alignment">
+        <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+       </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_3">
+      <widget class="QLineEdit" name="txtIP3">
        <property name="minimumSize">
         <size>
-         <width>0</width>
-         <height>40</height>
+         <width>50</width>
+         <height>35</height>
         </size>
        </property>
        <property name="font">
@@ -134,11 +164,23 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_3">
+      <widget class="QLabel" name="labDot3">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
-         <width>0</width>
-         <height>40</height>
+         <width>5</width>
+         <height>35</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>5</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -149,14 +191,17 @@
        <property name="text">
         <string>.</string>
        </property>
+       <property name="alignment">
+        <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+       </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_4">
+      <widget class="QLineEdit" name="txtIP4">
        <property name="minimumSize">
         <size>
-         <width>0</width>
-         <height>40</height>
+         <width>50</width>
+         <height>35</height>
         </size>
        </property>
        <property name="font">

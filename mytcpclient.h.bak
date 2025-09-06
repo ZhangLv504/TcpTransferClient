@@ -1,4 +1,4 @@
-﻿#ifndef MYTCPCLIENT_H
+#ifndef MYTCPCLIENT_H
 #define MYTCPCLIENT_H
 
 #include <QObject>
@@ -37,8 +37,6 @@ signals:
     void fileProgress(qint64 bytesSent, qint64 totalBytes);
     // 错误信号（输出错误信息字符串）
     void errorOccurred(const QString &error);
-    // 调试信息
-    void debugInfos(const QString &info);
     
 private slots:
     // 连接成功回调

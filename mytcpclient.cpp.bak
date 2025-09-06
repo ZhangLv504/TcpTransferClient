@@ -1,7 +1,6 @@
-﻿#pragma execution_character_set("utf-8")
+#pragma execution_character_set("utf-8")
 #include "mytcpclient.h"
 #include "protocalstruct.h"
-#include "debughelper.h"
 #include <QDebug>
 #include <QDateTime>
 #include <QThread>
@@ -9,8 +8,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QFileInfo>
-#include <QThread>
-#include <QTimer>
 
 // 构造函数：初始化成员变量
 MyTcpClient::MyTcpClient(QObject *parent)
@@ -42,14 +39,14 @@ void MyTcpClient::connectToServer(const QString &host, quint16 port) {
             static_cast<void(QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error),
             this, &MyTcpClient::onError); // 出错处理
     
-    emit debugInfos(QString("正在连接服务器: %1:%2").arg(host).arg(port));
+    qDebug() << "正在连接服务器: " << host << ":" << port;
     m_socket->connectToHost(host, port); // 发起连接
 }
 
 // 主动断开连接
 void MyTcpClient::disconnectFromServer() {
     if (m_socket) {
-        emit debugInfos("断开服务器连接");
+        qDebug() << "断开服务器连接";
         m_socket->disconnectFromHost(); // 请求断开
         m_socket->deleteLater(); // 延迟删除，防止野指针
         m_socket = nullptr;
@@ -90,7 +87,7 @@ void MyTcpClient::sendFile(const QString &filePath) {
     m_totalSent = 0;
     m_chunkIndex = 0;
     
-    emit debugInfos(QString("开始发送文件: %1 文件大小为: %2").arg(m_filePath).arg(m_fileSize));
+    qDebug() << "开始发送文件: " << m_filePath << "文件大小为: " << m_fileSize;
     
     
     // 先发第一块
@@ -102,7 +99,7 @@ void MyTcpClient::sendNextChunk() {
     const qint64 chunkSize = 16 * 1024; // 每片最大16KB
     if (m_file.atEnd()) {
         // 文件已经读完，传输完成
-        emit debugInfos(QString("文件发送完成，总大小: %1 字节").arg(m_fileSize));
+        qDebug() << "文件发送完成，总大小: " << m_fileSize << "字节";
         m_file.close();
         return;
     }
@@ -125,8 +122,8 @@ void MyTcpClient::sendNextChunk() {
     request["status"] = 0;                                      // 状态：0=正常
     request["message"] = "sending";                             // 状态描述
     
-    emit debugInfos(QString("发送分片: %1 已发送: %2/%3")
-                        .arg(m_chunkIndex - 1).arg(m_totalSent).arg(m_fileSize));
+    qDebug() << "发送分片:" << (m_chunkIndex - 1)
+             << " 已发送:" << m_totalSent << "/" << m_fileSize;
     
     // 发送请求
     sendRequest(request);
@@ -152,7 +149,7 @@ void MyTcpClient::sendRequest(const QJsonObject &data) {
 
 // 连接成功时回调
 void MyTcpClient::onConnected() {
-    emit debugInfos("已成功连接到服务器");
+    qDebug() << "已成功连接到服务器";
     m_buffer.clear(); // 清空接收缓冲区
     m_currentSeq = 0; // 重置序列号
     emit connectionChanged(true);
@@ -179,7 +176,7 @@ void MyTcpClient::onReadyRead() {
         QByteArray message = m_buffer.mid(sizeof(ProtocolHeader), header.body_len);
         m_buffer.remove(0, sizeof(ProtocolHeader) + header.body_len);
         
-        emit debugInfos(QString("收到服务端消息，长度: %1").arg(header.body_len));
+        qDebug() << "收到服务端消息，长度:" << header.body_len;
         processResponse(message); // 交给响应处理函数
     }
 }
@@ -200,20 +197,7 @@ void MyTcpClient::processResponse(const QByteArray &message) {
         int status = data["status"].toInt();
         
         if (status == 0) {
-            emit debugInfos(QString("收到分片ACK，分片编号: %1").arg(chunkIndex));
-            
-            /*
-            1.这个函数运行在主线程（因为你的 MyTcpClient 对象没有移动到其他线程），所以：
-                主线程被阻塞 1 秒。
-                所有事件处理、信号槽、QTcpSocket::readyRead 都无法执行。
-                TCP 缓冲区可能堆积，导致 服务器收到分片时乱序或多次 readyRead 触发生成多个文件。
-            2.一句话：阻塞主线程 + TCP 异步 IO → 数据处理错乱。
-            */
-            // QThread::sleep(1); // 暂停 1 秒
-            
-            // 处理分片ACK时
-            // QTimer::singleShot(1000, this, &MyTcpClient::sendNextChunk);
-            
+            qDebug() << "收到分片ACK，分片编号:" << chunkIndex;
             sendNextChunk(); // 收到确认，继续发下一片
         } else {
             emit errorOccurred(QString("分片 %1 传输失败").arg(chunkIndex));
@@ -223,7 +207,7 @@ void MyTcpClient::processResponse(const QByteArray &message) {
 
 // 断开连接时回调
 void MyTcpClient::onDisconnected() {
-    emit debugInfos("服务器已断开连接");
+    qDebug() << "服务器已断开连接";
     emit connectionChanged(false);
     if (m_file.isOpen()) {
         m_file.close();
@@ -233,7 +217,7 @@ void MyTcpClient::onDisconnected() {
 // 发生错误时回调
 void MyTcpClient::onError(QAbstractSocket::SocketError) {
     QString err = m_socket ? m_socket->errorString() : "未知socket错误";
-    // emit debugInfos(QString("发生错误: %1").arg(err));
+    qDebug() << "发生错误:" << err;
     emit errorOccurred(err);
     if (m_file.isOpen()) {
         m_file.close();
@@ -253,6 +237,6 @@ QByteArray MyTcpClient::buildPacket(quint8 type, const QJsonObject &data) {
     packet.append(reinterpret_cast<const char*>(&header), sizeof(header));  // 添加协议头
     packet.append(body);                                                    // 添加正文
     
-    emit debugInfos(QString("构建数据包，类型: %1 长度: %2").arg(type).arg(header.body_len));
+    qDebug() << "构建数据包，类型:" << type << " 长度:" << header.body_len;
     return packet;
 }

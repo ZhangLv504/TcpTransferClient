@@ -52,6 +52,11 @@ find_package(Qt5 REQUIRED COMPONENTS Core)
     endif()
 endif()
 
+# 添加头文件搜索路径
+target_include_directories(TcpTransferClient PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 target_link_libraries(TcpTransferClient PRIVATE 
     Qt${QT_VERSION_MAJOR}::Core 
     Qt${QT_VERSION_MAJOR}::Widgets

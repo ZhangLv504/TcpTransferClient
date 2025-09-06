@@ -1,4 +1,4 @@
-﻿#ifndef PROTOCALSTRUCT_H
+#ifndef PROTOCALSTRUCT_H
 #define PROTOCALSTRUCT_H
 
 #include <QtGlobal>
