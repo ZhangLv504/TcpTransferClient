@@ -39,6 +39,8 @@ signals:
     void errorOccurred(const QString &error);
     // 调试信息
     void debugInfos(const QString &info);
+    // 文件发送完成
+    void fileSent(const QString &filePath); 
     
 private slots:
     // 连接成功回调

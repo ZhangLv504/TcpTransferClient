@@ -29,11 +29,14 @@ private:
     void adjustFilePathHeight();
     // 更新连接按钮状态
     void updateConnectBtnState();
+    // 顺序发送函数
+    void sendNextFile();
 
 private:
     Ui::Widget *ui;
     
     MyTcpClient *m_client;       // 使用指针保存
     QStringList m_selectedFiles; // 保存选择的文件路径
+    QStringList m_fileQueue;     // 文件发送队列
 };
 #endif // WIDGET_H

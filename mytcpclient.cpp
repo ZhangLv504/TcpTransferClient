@@ -104,6 +104,8 @@ void MyTcpClient::sendNextChunk() {
         // 文件已经读完，传输完成
         emit debugInfos(QString("文件发送完成，总大小: %1 字节").arg(m_fileSize));
         m_file.close();
+        // 文件发送完成
+        emit fileSent(m_filePath);
         return;
     }
     

@@ -118,9 +118,12 @@ void Widget::onTransferFileSlot()
         return;
     }
     
-    for (const QString &file : m_selectedFiles) {
-        m_client->sendFile(file);
-    }
+     m_fileQueue = m_selectedFiles; // 复制队列
+     sendNextFile();                // 启动发送
+    
+    // for (const QString &file : m_selectedFiles) {
+    //     m_client->sendFile(file);
+    // }
 }
 
 // 调整文件路径高度
@@ -152,4 +155,21 @@ void Widget::updateConnectBtnState()
     // 判断是否都有值
     bool enable = !ip.isEmpty() && !port.isEmpty();
     ui->connectBtn->setEnabled(enable);
+}
+
+// 顺序发送函数
+void Widget::sendNextFile()
+{
+    if (m_fileQueue.isEmpty()) {
+        ui->infosTextEdit->append(LogWithTime("所有文件发送完成"));
+        return;
+    }
+    
+    QString nextFile = m_fileQueue.takeFirst();
+    ui->infosTextEdit->append(LogWithTime(QString("准备发送文件: %1").arg(nextFile)));
+    
+    // 连接 fileSent 信号，发送完成后自动发送下一个
+    connect(m_client, &MyTcpClient::fileSent, this, &Widget::sendNextFile, Qt::UniqueConnection);
+    
+    m_client->sendFile(nextFile);
 }
